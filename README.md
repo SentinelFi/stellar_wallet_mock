@@ -96,6 +96,115 @@ test("signs a transaction", async ({ page }) => {
 });
 ```
 
+## Pairing with Playwright
+
+### Setup
+
+1. Install both packages:
+
+```bash
+npm install -D stellar-wallet-mock @playwright/test
+npx playwright install chromium
+```
+
+2. In your `playwright.config.ts`, point the web server at your dApp:
+
+```ts
+import { defineConfig } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./tests",
+  use: {
+    headless: true,
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { browserName: "chromium" },
+    },
+  ],
+  webServer: {
+    command: "npm run dev",       // your dApp dev server
+    port: 5173,                   // your dApp port
+    reuseExistingServer: true,
+  },
+});
+```
+
+### Writing tests
+
+Call `installMockStellarWallet()` **before** `page.goto()` — it uses `page.addInitScript()` and `page.exposeFunction()` which must be registered before navigation.
+
+```ts
+import { test, expect } from "@playwright/test";
+import { installMockStellarWallet } from "stellar-wallet-mock";
+
+const SECRET_KEY = "SDPDMYEWFZEL6MW37FTPNTPZFYU2QYX4MLDSA7QBS4VSNZL5JL4IKDVQ";
+
+test("wallet connects and shows address", async ({ page }) => {
+  const wallet = await installMockStellarWallet({
+    page,
+    secretKey: SECRET_KEY,
+  });
+
+  await page.goto("http://localhost:5173");
+
+  // The dApp sees a connected Freighter wallet — no popups, no extension
+  await expect(page.locator(".wallet-address")).toContainText(
+    wallet.publicKey.slice(0, 4)
+  );
+});
+```
+
+### Using a test fixture
+
+For cleaner tests, create a reusable Playwright fixture:
+
+```ts
+// tests/fixtures.ts
+import { test as base } from "@playwright/test";
+import { installMockStellarWallet, type MockWallet } from "stellar-wallet-mock";
+
+const SECRET_KEY = "SDPDMYEWFZEL6MW37FTPNTPZFYU2QYX4MLDSA7QBS4VSNZL5JL4IKDVQ";
+
+export const test = base.extend<{ wallet: MockWallet }>({
+  wallet: async ({ page }, use) => {
+    const wallet = await installMockStellarWallet({
+      page,
+      secretKey: SECRET_KEY,
+    });
+    await use(wallet);
+  },
+});
+
+export { expect } from "@playwright/test";
+```
+
+Then in your tests:
+
+```ts
+// tests/my-dapp.spec.ts
+import { test, expect } from "./fixtures";
+
+test("submits a transaction", async ({ page, wallet }) => {
+  await page.goto("http://localhost:5173");
+
+  await page.click("#send-payment");
+  await expect(page.locator(".tx-success")).toBeVisible();
+});
+```
+
+### CI usage
+
+The mock requires no browser extension, so it works in headless CI out of the box:
+
+```yaml
+# GitHub Actions example
+- run: npx playwright install --with-deps chromium
+- run: npm run build
+- run: npx playwright test
+```
+
 ## How it works
 
 ```
@@ -176,6 +285,15 @@ npx playwright install chromium
 npm run build
 npm test
 ```
+
+## Inspiration
+
+This project was inspired by and builds on ideas from:
+
+- [wallet-mock](https://github.com/johanneskares/wallet-mock) — Ethereum wallet mock for Playwright by Johannes Kares. The approach of intercepting wallet communication at the message layer for headless E2E testing was a direct inspiration for this project.
+- [Freighter](https://github.com/nicholasgasior/nicholasgasior-freighter) by Stellar — the official Stellar wallet extension whose `postMessage` protocol this library mocks.
+- [Stellar Wallets Kit](https://github.com/Creit-Tech/Stellar-Wallets-Kit) by Creit Tech — the wallet abstraction layer whose `localStorage` conventions this library pre-seeds for seamless integration.
+- [Synpress](https://github.com/Synthetixio/synpress) — E2E testing framework for Ethereum dApps with MetaMask, which demonstrated the value of automated wallet testing in CI pipelines.
 
 ## License
 
