@@ -96,6 +96,30 @@ test("signs a transaction", async ({ page }) => {
 });
 ```
 
+## Why not mock at the Stellar Wallets Kit level?
+
+You *could* create a mock wallet module and inject it into `StellarWalletsKit` directly, but there are meaningful tradeoffs:
+
+| | Kit-level mock | postMessage-level mock (this library) |
+|---|---|---|
+| dApp code changes required | Yes — needs dependency injection or test flags | None — completely transparent to the dApp |
+| What it covers | Only dApps using `stellar-wallets-kit` | Any integration: Kit, `freighter-api`, or raw `postMessage` |
+| What it tests | Your mock | Your actual dApp's wallet flow end-to-end |
+| Catches Kit/freighter-api bugs | No — those layers are bypassed | Yes — the full stack is exercised |
+| Production fidelity | Low — skips serialization, polling, message matching | High — same code path as a real Freighter extension |
+
+This library intercepts at the lowest common layer:
+
+```
+dApp → stellar-wallets-kit → FreighterModule → freighter-api → postMessage → [mock intercepts here]
+```
+
+Everything above the interception point runs exactly as it would in production. If the Kit has a bug in how it talks to Freighter, or if `freighter-api` changes its message format, your tests will catch it — because you're testing the real integration, not a stub.
+
+The tradeoff is that this library is coupled to Freighter's internal `postMessage` protocol (message types, field names, even the `messagedId` typo). But that coupling is a feature — if the protocol changes and your dApp breaks in production, your tests should break too.
+
+**TL;DR:** Mocking at the Kit level tests your mock. Mocking at the postMessage level tests your dApp.
+
 ## Pairing with Playwright
 
 ### Setup
