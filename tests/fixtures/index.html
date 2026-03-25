@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stellar Wallet Mock Test Fixture</title>
+  <style>
+    body { font-family: monospace; padding: 2rem; background: #111; color: #eee; }
+    .result { margin: 0.5rem 0; padding: 0.5rem; background: #222; border-radius: 4px; }
+    .error { color: #f66; }
+    .success { color: #6f6; }
+    button { margin: 0.25rem; padding: 0.5rem 1rem; cursor: pointer; }
+    #status { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Stellar Wallet Mock - Test Fixture</h1>
+  <div id="status">Initializing...</div>
+
+  <div>
+    <button id="btn-connect">Check Connection</button>
+    <button id="btn-address">Get Address</button>
+    <button id="btn-network">Get Network</button>
+    <button id="btn-sign">Sign Transaction</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script type="module">
+    // Import freighter-api from CDN (ESM build)
+    // We use the postMessage protocol directly to avoid bundling issues.
+    // This mirrors exactly what @stellar/freighter-api does internally.
+
+    const EXTERNAL_MSG_REQUEST = "FREIGHTER_EXTERNAL_MSG_REQUEST";
+    const EXTERNAL_MSG_RESPONSE = "FREIGHTER_EXTERNAL_MSG_RESPONSE";
+
+    /**
+     * Send a message to the mock wallet and wait for a response.
+     * This is the same protocol that @stellar/freighter-api uses.
+     */
+    function sendFreighterMessage(type, params = {}) {
+      return new Promise((resolve, reject) => {
+        const messageId = Date.now() + Math.random();
+
+        function handler(event) {
+          const data = event.data;
+          if (
+            data &&
+            data.source === EXTERNAL_MSG_RESPONSE &&
+            data.messagedId === messageId
+          ) {
+            window.removeEventListener("message", handler);
+            if (data.error) {
+              reject(data.error);
+            } else {
+              resolve(data);
+            }
+          }
+        }
+
+        window.addEventListener("message", handler);
+
+        window.postMessage(
+          {
+            source: EXTERNAL_MSG_REQUEST,
+            messageId,
+            type,
+            ...params,
+          },
+          window.location.origin
+        );
+
+        // Timeout after 5 seconds
+        setTimeout(() => {
+          window.removeEventListener("message", handler);
+          reject(new Error(`Timeout waiting for ${type} response`));
+        }, 5000);
+      });
+    }
+
+    function addResult(id, label, value, isError = false) {
+      const el = document.getElementById("results");
+      const div = document.createElement("div");
+      div.className = `result ${isError ? "error" : "success"}`;
+      div.id = `result-${id}`;
+      div.textContent = `${label}: ${typeof value === "object" ? JSON.stringify(value) : value}`;
+      el.appendChild(div);
+    }
+
+    // Check connection on load
+    async function checkConnection() {
+      try {
+        const res = await sendFreighterMessage("REQUEST_CONNECTION_STATUS");
+        document.getElementById("status").textContent = res.isConnected
+          ? "Connected"
+          : "Not Connected";
+        document.getElementById("status").className = res.isConnected
+          ? "success"
+          : "error";
+        addResult("connection", "isConnected", res.isConnected);
+      } catch (err) {
+        document.getElementById("status").textContent = "Error";
+        document.getElementById("status").className = "error";
+        addResult("connection", "Connection Error", err.message, true);
+      }
+    }
+
+    async function getAddress() {
+      try {
+        const res = await sendFreighterMessage("REQUEST_PUBLIC_KEY");
+        addResult("address", "Public Key", res.publicKey);
+        // Also set a visible element for easy assertion
+        document.getElementById("status").setAttribute("data-address", res.publicKey);
+      } catch (err) {
+        addResult("address", "Address Error", err.message, true);
+      }
+    }
+
+    async function getNetwork() {
+      try {
+        const res = await sendFreighterMessage("REQUEST_NETWORK_DETAILS");
+        addResult("network", "Network", `${res.network} (${res.networkPassphrase})`);
+      } catch (err) {
+        addResult("network", "Network Error", err.message, true);
+      }
+    }
+
+    async function signTransaction() {
+      try {
+        // We need a valid transaction XDR to sign.
+        // For the test fixture, we'll pass a dummy XDR and let the mock handle it.
+        // The test will provide the real XDR via Playwright.
+        const xdr = window.__testTransactionXdr || "";
+        if (!xdr) {
+          addResult("sign", "Sign Error", "No transaction XDR provided. Set window.__testTransactionXdr first.", true);
+          return;
+        }
+        const res = await sendFreighterMessage("SUBMIT_TRANSACTION", {
+          transactionXdr: xdr,
+        });
+        addResult("sign", "Signed TX", res.signedTransaction ? "Success (XDR present)" : "Missing XDR");
+        addResult("signer", "Signer", res.signerAddress);
+      } catch (err) {
+        addResult("sign", "Sign Error", err.message, true);
+      }
+    }
+
+    // Wire up buttons
+    document.getElementById("btn-connect").addEventListener("click", checkConnection);
+    document.getElementById("btn-address").addEventListener("click", getAddress);
+    document.getElementById("btn-network").addEventListener("click", getNetwork);
+    document.getElementById("btn-sign").addEventListener("click", signTransaction);
+
+    // Auto-check connection on load
+    checkConnection();
+  </script>
+</body>
+</html>

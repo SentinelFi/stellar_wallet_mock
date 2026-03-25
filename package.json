@@ -1,0 +1,37 @@
+{
+  "name": "stellar-wallet-mock",
+  "version": "0.1.0",
+  "description": "Mock Freighter wallet for headless E2E testing of Stellar/Soroban dApps with Playwright",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed"
+  },
+  "keywords": [
+    "stellar",
+    "soroban",
+    "freighter",
+    "wallet",
+    "mock",
+    "playwright",
+    "e2e",
+    "testing"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@stellar/stellar-sdk": "^13.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "serve": "^14.2.6",
+    "typescript": "^5.7.0"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0"
+  }
+}
