@@ -1,0 +1,31 @@
+[workspace]
+members = ["contracts/*"]
+resolver = "2"
+
+[workspace.package]
+authors = ["The Aha Company"]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/theahaco/scaffold-stellar"
+version = "0.0.1"
+
+[workspace.dependencies]
+soroban-sdk = "23"
+stellar-tokens = "0.6.0"
+stellar-access = "0.6.0"
+stellar-macros = "0.6.0"
+stellar-contract-utils = "0.6.0"
+
+[profile.release]
+opt-level = "z"
+debug = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = "abort"
+overflow-checks = true
+strip = true
+
+[profile.release-with-logs]
+debug-assertions = true
+inherits = "release"

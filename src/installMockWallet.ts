@@ -44,6 +44,17 @@ function browserMockScript(config: {
       "@StellarWalletsKit/usedWalletsIds",
       JSON.stringify(["freighter"])
     );
+
+    // Pre-seed localStorage for scaffold-stellar's WalletProvider.
+    // The scaffold reads these keys (via its typed storage utility which
+    // JSON.stringify's values) to restore wallet state on page load.
+    localStorage.setItem("walletId", JSON.stringify("freighter"));
+    localStorage.setItem("walletAddress", JSON.stringify(config.publicKey));
+    localStorage.setItem("walletNetwork", JSON.stringify(config.network));
+    localStorage.setItem(
+      "networkPassphrase",
+      JSON.stringify(config.networkPassphrase)
+    );
   } catch {
     // localStorage may not be available in some contexts
   }
@@ -187,15 +198,16 @@ function browserMockScript(config: {
         break;
     }
 
-    // Dispatch the response. Note: freighter-api uses "messagedId" (typo) for matching.
-    window.dispatchEvent(
-      new MessageEvent("message", {
-        data: {
-          source: EXTERNAL_MSG_RESPONSE,
-          messagedId: messageId,
-          ...response,
-        },
-      })
+    // Send the response via postMessage so that event.source === window,
+    // which freighter-api v5+ checks when matching responses.
+    // Note: freighter-api uses "messagedId" (typo) for matching.
+    window.postMessage(
+      {
+        source: EXTERNAL_MSG_RESPONSE,
+        messagedId: messageId,
+        ...response,
+      },
+      window.location.origin
     );
   });
 }
@@ -255,11 +267,14 @@ export async function installMockStellarWallet(
     "__stellarMockSignAuthEntry",
     async (entryXdr: string): Promise<string> => {
       const { Keypair } = require("@stellar/stellar-sdk");
+      const crypto = require("crypto");
       const kp = Keypair.fromSecret(secretKey);
 
-      // Auth entries are signed as raw hash preimages
-      const entryBuf = Buffer.from(entryXdr, "base64");
-      const signature = kp.sign(entryBuf);
+      // The entryXdr is a HashIdPreimage XDR (base64) from authorizeEntry.
+      // Stellar convention: SHA-256 hash the preimage, then ed25519 sign the hash.
+      const preimageBytes = Buffer.from(entryXdr, "base64");
+      const hash = crypto.createHash("sha256").update(preimageBytes).digest();
+      const signature = kp.sign(hash);
       return signature.toString("base64");
     }
   );

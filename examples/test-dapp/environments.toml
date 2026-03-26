@@ -1,0 +1,28 @@
+### Development environment configuration
+[development.network]
+rpc-url = "https://soroban-testnet.stellar.org"
+network-passphrase = "Test SDF Network ; September 2015"
+
+[[development.accounts]]
+name = "me"
+default = true
+
+[development.contracts]
+counter = { client = true }
+
+[development.contracts.vault]
+client = true
+constructor_args = "--owner me --asset_address CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+
+### Staging environment configuration
+[staging.network]
+rpc-url = "https://soroban-testnet.stellar.org"
+network-passphrase = "Test SDF Network ; September 2015"
+
+[[staging.accounts]]
+name = "testnet-user"
+default = true
+
+[staging.contracts]
+counter = { client = true }
+vault = { client = true, constructor_args = "--owner testnet-user --asset_address CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC" }

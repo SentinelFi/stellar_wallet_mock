@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "prepare": "tsc",
     "test": "npx playwright test",
     "test:headed": "npx playwright test --headed"
   },
@@ -24,12 +25,12 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@stellar/stellar-sdk": "^13.1.0"
+    "@stellar/stellar-sdk": "^13.1.0",
+    "typescript": "^5.7.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
-    "serve": "^14.2.6",
-    "typescript": "^5.7.0"
+    "serve": "^14.2.6"
   },
   "peerDependencies": {
     "@playwright/test": ">=1.40.0"
