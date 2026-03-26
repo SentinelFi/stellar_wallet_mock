@@ -4,3 +4,19 @@ target/
 test-results/
 playwright-report/
 .env
+.env.*
+
+# Next.js (docs/)
+docs/.next/
+docs/out/
+docs/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
