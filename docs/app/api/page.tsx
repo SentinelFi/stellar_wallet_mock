@@ -8,7 +8,7 @@ export default function ApiReference() {
       <h1 className="text-3xl font-bold text-white mb-6">API Reference</h1>
 
       {/* installMockStellarWallet */}
-      <section className="mb-12">
+      <section id="installmockstellarwallet" className="mb-12 scroll-mt-8">
         <h2 className="text-2xl font-semibold text-white mb-3">
           <code>installMockStellarWallet(options)</code>
         </h2>
@@ -80,7 +80,7 @@ console.log(wallet.publicKey); // "GBIIN6LP..."`}
       </section>
 
       {/* createWallet */}
-      <section className="mb-12">
+      <section id="createwallet" className="mb-12 scroll-mt-8">
         <h2 className="text-2xl font-semibold text-white mb-3">
           <code>createWallet(secretKey, options?)</code>
         </h2>
@@ -126,7 +126,7 @@ console.log(wallet.publicKey); // "GBIIN6LP..."`}
       </section>
 
       {/* MockWallet */}
-      <section className="mb-12">
+      <section id="mockwallet" className="mb-12 scroll-mt-8">
         <h2 className="text-2xl font-semibold text-white mb-3">
           <code>MockWallet</code>
         </h2>
@@ -176,7 +176,7 @@ console.log(wallet.publicKey); // "GBIIN6LP..."`}
       </section>
 
       {/* Exported Types */}
-      <section>
+      <section id="exported-types" className="scroll-mt-8">
         <h2 className="text-2xl font-semibold text-white mb-3">
           Exported Types
         </h2>

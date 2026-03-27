@@ -5,7 +5,7 @@ export default function HowItWorks() {
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">How It Works</h1>
 
-      <h2 className="text-xl font-semibold text-white mt-8 mb-3">
+      <h2 id="architecture" className="text-xl font-semibold text-white mt-8 mb-3 scroll-mt-8">
         Architecture
       </h2>
       <p className="text-text-muted mb-4">
@@ -34,7 +34,7 @@ window.postMessage({ source: "FREIGHTER_EXTERNAL_MSG_RESPONSE", ... })`}
         <li>Scaffold Stellar apps</li>
       </ul>
 
-      <h2 className="text-xl font-semibold text-white mt-8 mb-3">
+      <h2 id="message-protocol" className="text-xl font-semibold text-white mt-8 mb-3 scroll-mt-8">
         Message Protocol
       </h2>
       <p className="text-text-muted mb-4">
@@ -71,7 +71,7 @@ window.postMessage({ source: "FREIGHTER_EXTERNAL_MSG_RESPONSE", ... })`}
         </table>
       </div>
 
-      <h2 className="text-xl font-semibold text-white mt-8 mb-3">
+      <h2 id="localstorage-pre-seeding" className="text-xl font-semibold text-white mt-8 mb-3 scroll-mt-8">
         localStorage Pre-Seeding
       </h2>
       <p className="text-text-muted mb-4">
@@ -139,7 +139,7 @@ window.postMessage({ source: "FREIGHTER_EXTERNAL_MSG_RESPONSE", ... })`}
         </table>
       </div>
 
-      <h2 className="text-xl font-semibold text-white mt-8 mb-3">
+      <h2 id="implementation-details" className="text-xl font-semibold text-white mt-8 mb-3 scroll-mt-8">
         Implementation Details
       </h2>
       <ul className="list-disc list-inside text-text-muted space-y-2">

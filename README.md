@@ -55,6 +55,12 @@ Or visit the hosted docs (coming soon).
 - CI/CD ready — no browser extension needed
 - Zero runtime dependencies beyond `@stellar/stellar-sdk`
 
+## Limitations
+
+- **Freighter only** — currently only mocks the [Freighter](https://freighter.app) wallet. Other wallets (xBull, Albedo, Lobstr, etc.) use different communication protocols and are not yet supported. Support for additional wallets is planned for future releases.
+- **Chromium only** — Playwright's `page.exposeFunction()` is used for signing, which works best with Chromium-based browsers.
+- **No multi-account support** — a single secret key is used per page. To test multi-account flows, use separate pages or fixtures.
+
 ## Inspiration
 
 - [wallet-mock](https://github.com/johanneskares/wallet-mock) — Ethereum wallet mock for Playwright by Johannes Kares

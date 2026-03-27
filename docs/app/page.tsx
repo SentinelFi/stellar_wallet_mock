@@ -55,6 +55,29 @@ export default function Home() {
         changes its message format, your tests will catch it.
       </p>
 
+      <h2 className="text-2xl font-bold text-white mb-4">Current Limitations</h2>
+      <div className="bg-surface-light border border-border rounded-lg p-5 mb-8">
+        <ul className="space-y-3 text-sm text-text-muted">
+          <li>
+            <strong className="text-white">Freighter only</strong> — currently
+            only mocks the Freighter wallet. Other Stellar wallets (xBull,
+            Albedo, Lobstr, etc.) use different communication protocols and are
+            not yet supported. Support for additional wallets is planned for
+            future releases.
+          </li>
+          <li>
+            <strong className="text-white">Chromium only</strong> —
+            Playwright&apos;s <code>page.exposeFunction()</code> is used for signing,
+            which works best with Chromium-based browsers.
+          </li>
+          <li>
+            <strong className="text-white">No multi-account support</strong> — a
+            single secret key is used per page. To test multi-account flows, use
+            separate pages or fixtures.
+          </li>
+        </ul>
+      </div>
+
       <div className="flex gap-4">
         <Link
           href="/installation"
