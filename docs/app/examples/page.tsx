@@ -1,5 +1,4 @@
 import CodeBlock from "@/components/CodeBlock";
-import Link from "next/link";
 
 export const metadata = { title: "Examples - stellar-wallet-mock" };
 
@@ -8,8 +7,8 @@ export default function Examples() {
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Examples</h1>
 
-      <p className="text-text-muted mb-8">
-        All examples below are taken from the{" "}
+      <p className="text-text-muted mb-4">
+        The code below comes from the{" "}
         <a
           href="https://github.com/SentinelFi/stellar_wallet_mock/tree/main/examples/test-dapp"
           target="_blank"
@@ -18,7 +17,17 @@ export default function Examples() {
         >
           examples/test-dapp
         </a>{" "}
-        directory and the test files in{" "}
+        directory in the repository. It is a full{" "}
+        <a
+          href="https://github.com/theahaco/scaffold-stellar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-accent hover:underline"
+        >
+          Scaffold Stellar
+        </a>{" "}
+        app with two Soroban contracts deployed on testnet: a Counter and an
+        OpenZeppelin ERC-4626 XLM Vault. The test files live in{" "}
         <a
           href="https://github.com/SentinelFi/stellar_wallet_mock/tree/main/tests"
           target="_blank"
@@ -27,18 +36,32 @@ export default function Examples() {
         >
           tests/
         </a>
-        . The example dApp is a full Scaffold Stellar app with a Counter contract
-        and an OpenZeppelin ERC-4626 XLM Vault deployed on testnet.
+        .
+      </p>
+      <p className="text-text-muted mb-8">
+        Each example demonstrates a different kind of dApp interaction you can
+        automate with stellar-wallet-mock &mdash; from basic wallet connection
+        to Soroban auth entry signing.
       </p>
 
       {/* Fixture setup */}
-      <section className="mb-12">
+      <section id="playwright-fixture" className="mb-12 scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
-          1. Reusable Playwright Fixture
+          Playwright Fixture
         </h2>
         <p className="text-text-muted mb-4">
-          Start by creating a fixture so every test gets a connected wallet
-          automatically. All examples below use this fixture.
+          A{" "}
+          <a
+            href="https://playwright.dev/docs/test-fixtures"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline"
+          >
+            Playwright fixture
+          </a>{" "}
+          lets you run setup code before each test. Here we create a{" "}
+          <code>wallet</code> fixture that installs the mock wallet so every
+          test starts with a connected wallet automatically.
         </p>
         <CodeBlock
           filename="tests/fixtures.ts"
@@ -64,17 +87,22 @@ export const test = base.extend<{ wallet: MockWallet }>({
 export { expect } from "@playwright/test";
 export { PUBLIC_KEY };`}
         />
+        <p className="text-text-muted mt-4">
+          All examples below import <code>test</code> and{" "}
+          <code>expect</code> from this fixture file instead of from{" "}
+          <code>@playwright/test</code> directly.
+        </p>
       </section>
 
       {/* Connect wallet */}
-      <section className="mb-12">
+      <section id="connect-wallet" className="mb-12 scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
-          2. Connect Wallet and Verify Address
+          Connect Wallet
         </h2>
         <p className="text-text-muted mb-4">
-          The simplest test — navigate to your dApp and confirm the wallet
-          connected with the right address. This is from{" "}
-          <code>tests/test-dapp.spec.ts</code>.
+          The simplest test &mdash; navigate to the dApp and confirm the
+          wallet connected with the right address. The mock pre-seeds
+          localStorage, so the dApp boots directly into a connected state.
         </p>
         <CodeBlock
           filename="tests/connect.spec.ts"
@@ -92,15 +120,15 @@ test("wallet connects and shows address", async ({ page }) => {
       </section>
 
       {/* Counter increment */}
-      <section className="mb-12">
+      <section id="sign-transaction" className="mb-12 scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
-          3. Sign a Transaction (Counter Increment)
+          Sign a Transaction
         </h2>
         <p className="text-text-muted mb-4">
-          This test clicks the increment button on a Soroban counter contract.
-          The mock transparently signs the transaction — no popup, no manual
-          approval. From{" "}
-          <code>tests/test-dapp.spec.ts</code>.
+          Clicking the increment button on a Soroban counter contract triggers
+          a transaction. The mock intercepts the{" "}
+          <code>SUBMIT_TRANSACTION</code> message and signs it in Node.js
+          &mdash; no popup, no manual approval.
         </p>
         <CodeBlock
           filename="tests/counter.spec.ts"
@@ -133,16 +161,17 @@ test("counter increment signs and updates count", async ({ page }) => {
       </section>
 
       {/* Vault deposit */}
-      <section className="mb-12">
+      <section id="vault-deposit" className="mb-12 scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
-          4. Deposit XLM into a Vault (Auth Entry Signing)
+          Vault Deposit (Auth Entry Signing)
         </h2>
         <p className="text-text-muted mb-4">
-          This deposits 1 XLM into an OpenZeppelin ERC-4626 vault contract.
-          The vault&apos;s <code>deposit()</code> calls <code>require_auth()</code>{" "}
-          for both the token transfer and vault interaction — the mock signs
-          all auth entries automatically. From{" "}
-          <code>tests/test-dapp.spec.ts</code>.
+          Depositing XLM into an OpenZeppelin ERC-4626 vault is more complex
+          than a simple transaction. The vault&apos;s <code>deposit()</code>{" "}
+          calls <code>require_auth()</code> for both the token transfer and
+          the vault interaction, which means the wallet needs to sign Soroban
+          auth entries (via <code>SUBMIT_AUTH_ENTRY</code>). The mock handles
+          this automatically.
         </p>
         <CodeBlock
           filename="tests/vault-deposit.spec.ts"
@@ -178,13 +207,13 @@ test("deposit XLM into vault and receive shares", async ({ page }) => {
       </section>
 
       {/* Vault withdraw */}
-      <section className="mb-12">
+      <section id="vault-withdraw" className="mb-12 scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
-          5. Withdraw XLM from a Vault
+          Vault Withdraw
         </h2>
         <p className="text-text-muted mb-4">
-          After depositing, withdraw 0.5 XLM and verify the vault balance
-          decreases. From <code>tests/test-dapp.spec.ts</code>.
+          After depositing, withdraw XLM and verify the vault balance
+          decreases. This also uses auth entry signing under the hood.
         </p>
         <CodeBlock
           filename="tests/vault-withdraw.spec.ts"
@@ -232,13 +261,15 @@ test("withdraw XLM from vault", async ({ page }) => {
       </section>
 
       {/* Read-only calls */}
-      <section className="mb-12">
+      <section id="read-only" className="mb-12 scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
-          6. Read-Only Contract Calls (No Signing)
+          Read-Only Contract Calls
         </h2>
         <p className="text-text-muted mb-4">
-          Not everything needs a signature. Read-only calls like checking a
-          counter value or vault balance work without wallet auth.
+          Not every interaction needs signing. Reading contract state (counter
+          value, vault balance) works without wallet authorization &mdash; but
+          you still need the mock installed so the dApp boots into a connected
+          state.
         </p>
         <CodeBlock
           filename="tests/read-only.spec.ts"
@@ -253,29 +284,18 @@ test("read counter value without signing", async ({ page }) => {
 
   const counterValue = page.getByTestId("counter-value");
   await expect(counterValue).toContainText(/\\d+/, { timeout: 15_000 });
-});
-
-test("read vault total assets without signing", async ({ page }) => {
-  await page.goto("http://localhost:5173");
-
-  const refreshBtn = page.getByTestId("refresh-balance-btn");
-  await expect(refreshBtn).toBeVisible({ timeout: 10_000 });
-  await refreshBtn.click();
-
-  const vaultBalance = page.getByTestId("vault-balance");
-  await expect(vaultBalance).toContainText("XLM", { timeout: 15_000 });
 });`}
         />
       </section>
 
       {/* Network configs */}
-      <section className="mb-12">
+      <section id="network-configuration" className="mb-12 scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
-          7. Network Configuration
+          Network Configuration
         </h2>
         <p className="text-text-muted mb-4">
-          The examples above use testnet. Here&apos;s how to configure for other
-          networks:
+          The examples above use testnet. Pass different <code>network</code>{" "}
+          and <code>networkPassphrase</code> values for other networks:
         </p>
 
         <h3 className="text-lg font-medium text-white mt-4 mb-2">Mainnet</h3>
@@ -304,13 +324,13 @@ await installMockStellarWallet({
       </section>
 
       {/* Playwright config */}
-      <section className="mb-12">
+      <section id="playwright-configuration" className="mb-12 scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
-          8. Playwright Configuration
+          Playwright Configuration
         </h2>
         <p className="text-text-muted mb-4">
-          This is the Playwright config used by the example dApp. It starts the
-          dev server automatically and runs tests serially (required when tests
+          The Playwright config used by the example dApp. It starts the dev
+          server automatically and runs tests serially (required when tests
           share a testnet account to avoid sequence number conflicts).
         </p>
         <CodeBlock
@@ -336,49 +356,13 @@ export default defineConfig({
         />
       </section>
 
-      {/* CI */}
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold text-white mb-3">
-          9. GitHub Actions CI
-        </h2>
-        <CodeBlock
-          language="yaml"
-          filename=".github/workflows/e2e.yml"
-          code={`name: E2E Tests
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npm run build
-      - run: npx playwright test`}
-        />
-      </section>
-
       {/* Running the example */}
-      <section>
+      <section id="running-the-example" className="scroll-mt-8">
         <h2 className="text-xl font-semibold text-white mb-3">
           Running the Example dApp
         </h2>
         <p className="text-text-muted mb-4">
-          The{" "}
-          <a
-            href="https://github.com/SentinelFi/stellar_wallet_mock/tree/main/examples/test-dapp"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:underline"
-          >
-            examples/test-dapp
-          </a>{" "}
-          directory contains a full Scaffold Stellar app with two Soroban
-          contracts (Counter + OZ ERC-4626 Vault). To run it locally:
+          To run the example dApp and its tests locally:
         </p>
         <CodeBlock
           language="bash"
@@ -390,55 +374,11 @@ stellar scaffold build --build-clients
 # Start the dev server
 npm run dev
 
-# In another terminal — run the 16 tests (7 unit + 9 E2E)
+# In another terminal — run the tests
 cd ../..
 npm run build
 npx playwright test`}
         />
-        <div className="bg-surface-light border border-border rounded-lg p-4 mt-4">
-          <p className="text-sm text-text-muted">
-            <strong className="text-white">Prerequisites:</strong>{" "}
-            Rust with <code>wasm32v1-none</code> target, Node.js v22+,{" "}
-            Stellar CLI with Scaffold plugin, and Docker.
-          </p>
-        </div>
-      </section>
-
-      {/* Limitations */}
-      <section id="limitations" className="scroll-mt-8">
-        <h2 className="text-xl font-semibold text-white mb-3">
-          Limitations
-        </h2>
-        <div className="bg-surface-light border border-border rounded-lg p-5">
-          <ul className="space-y-3 text-sm text-text-muted">
-            <li>
-              <strong className="text-white">Freighter only</strong> — currently
-              only the{" "}
-              <a
-                href="https://freighter.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent hover:underline"
-              >
-                Freighter
-              </a>{" "}
-              wallet is mocked. Other Stellar wallets (xBull, Albedo, Lobstr,
-              etc.) use different communication protocols and are not yet
-              supported. Support for additional wallets is planned for future
-              releases.
-            </li>
-            <li>
-              <strong className="text-white">Chromium only</strong> —
-              Playwright&apos;s <code>page.exposeFunction()</code> is used for
-              signing, which works best with Chromium-based browsers.
-            </li>
-            <li>
-              <strong className="text-white">No multi-account support</strong>{" "}
-              — a single secret key is used per page. To test multi-account
-              flows, use separate pages or fixtures.
-            </li>
-          </ul>
-        </div>
       </section>
     </div>
   );

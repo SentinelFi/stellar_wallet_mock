@@ -11,9 +11,46 @@ type NavItem = {
 };
 
 const nav: NavItem[] = [
-  { href: "/", label: "Introduction" },
+  {
+    href: "/",
+    label: "Introduction",
+    children: [
+      { href: "/#what", label: "What" },
+      { href: "/#why", label: "Why" },
+      { href: "/#compatibility", label: "Compatibility" },
+      { href: "/#current-limitations", label: "Current Limitations" },
+    ],
+  },
   { href: "/installation", label: "Installation" },
   { href: "/quickstart", label: "Quick Start" },
+  {
+    href: "/how-it-works",
+    label: "How It Works",
+    children: [
+      { href: "/how-it-works#origin-and-inspiration", label: "Origin & Inspiration" },
+      { href: "/how-it-works#architecture", label: "Architecture" },
+      { href: "/how-it-works#the-bridge-pattern", label: "The Bridge Pattern" },
+      { href: "/how-it-works#browser-injection", label: "Browser Injection" },
+      { href: "/how-it-works#message-protocol", label: "Message Protocol" },
+      { href: "/how-it-works#localstorage-pre-seeding", label: "localStorage Pre-Seeding" },
+      { href: "/how-it-works#signing-in-detail", label: "Signing in Detail" },
+    ],
+  },
+  {
+    href: "/examples",
+    label: "Examples",
+    children: [
+      { href: "/examples#playwright-fixture", label: "Playwright Fixture" },
+      { href: "/examples#connect-wallet", label: "Connect Wallet" },
+      { href: "/examples#sign-transaction", label: "Sign Transaction" },
+      { href: "/examples#vault-deposit", label: "Vault Deposit" },
+      { href: "/examples#vault-withdraw", label: "Vault Withdraw" },
+      { href: "/examples#read-only", label: "Read-Only Calls" },
+      { href: "/examples#network-configuration", label: "Network Config" },
+      { href: "/examples#playwright-configuration", label: "Playwright Config" },
+      { href: "/examples#running-the-example", label: "Running the Example" },
+    ],
+  },
   {
     href: "/api",
     label: "API Reference",
@@ -22,32 +59,6 @@ const nav: NavItem[] = [
       { href: "/api#createwallet", label: "createWallet" },
       { href: "/api#mockwallet", label: "MockWallet" },
       { href: "/api#exported-types", label: "Exported Types" },
-    ],
-  },
-  {
-    href: "/examples",
-    label: "Examples",
-    children: [
-      { href: "/examples#1-reusable-playwright-fixture", label: "Playwright Fixture" },
-      { href: "/examples#2-connect-wallet-and-verify-address", label: "Connect Wallet" },
-      { href: "/examples#3-sign-a-transaction-counter-increment", label: "Sign Transaction" },
-      { href: "/examples#4-deposit-xlm-into-a-vault-auth-entry-signing", label: "Vault Deposit" },
-      { href: "/examples#5-withdraw-xlm-from-a-vault", label: "Vault Withdraw" },
-      { href: "/examples#6-read-only-contract-calls-no-signing", label: "Read-Only Calls" },
-      { href: "/examples#7-network-configuration", label: "Network Config" },
-      { href: "/examples#8-playwright-configuration", label: "Playwright Config" },
-      { href: "/examples#9-github-actions-ci", label: "GitHub Actions CI" },
-      { href: "/examples#limitations", label: "Limitations" },
-    ],
-  },
-  {
-    href: "/how-it-works",
-    label: "How It Works",
-    children: [
-      { href: "/how-it-works#architecture", label: "Architecture" },
-      { href: "/how-it-works#message-protocol", label: "Message Protocol" },
-      { href: "/how-it-works#localstorage-pre-seeding", label: "localStorage Pre-Seeding" },
-      { href: "/how-it-works#implementation-details", label: "Implementation Details" },
     ],
   },
 ];

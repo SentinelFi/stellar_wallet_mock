@@ -6,16 +6,22 @@ export default function Home() {
       <h1 className="text-4xl font-bold text-white mb-4">
         stellar-wallet-mock
       </h1>
+
+      <h2 id="what" className="text-2xl font-bold text-white mt-8 mb-4 scroll-mt-8">What</h2>
       <p className="text-xl text-text-muted mb-8">
-        A mock Freighter wallet for headless E2E testing of Stellar/Soroban
-        dApps using Playwright.
+        A Playwright testing library that mocks the Freighter wallet browser
+        extension, letting you run headless E2E tests against Stellar/Soroban
+        dApps without a real wallet extension. No browser extension needed. No
+        manual wallet interaction. Works with any dApp that uses{" "}
+        <code>@stellar/freighter-api</code> — zero dApp code changes
+        required.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2 mb-12">
         {[
           {
             title: "Zero dApp Code Changes",
-            desc: "Works transparently with any dApp using @stellar/freighter-api or @creit-tech/stellar-wallets-kit.",
+            desc: "Works transparently with any dApp using @stellar/freighter-api.",
           },
           {
             title: "Real Transaction Signing",
@@ -40,7 +46,7 @@ export default function Home() {
         ))}
       </div>
 
-      <h2 className="text-2xl font-bold text-white mb-4">Why?</h2>
+      <h2 id="why" className="text-2xl font-bold text-white mb-4 scroll-mt-8">Why</h2>
       <p className="text-text-muted mb-4">
         Testing Stellar dApps end-to-end traditionally requires a real browser
         wallet extension, manual clicks through approval dialogs, and often
@@ -49,13 +55,54 @@ export default function Home() {
         <code>window.postMessage</code> protocol between your dApp and the
         Freighter wallet extension.
       </p>
-      <p className="text-text-muted mb-8">
-        Everything above the interception point runs exactly as it would in
-        production — if the Stellar Wallets Kit has a bug or if freighter-api
-        changes its message format, your tests will catch it.
+      <p className="text-text-muted mb-4">
+        The goal is to automate your frontend tests — verify that your dApp
+        connects to wallets, reads contract state, and submits transactions
+        correctly, all without manual interaction.
       </p>
 
-      <h2 className="text-2xl font-bold text-white mb-4">Current Limitations</h2>
+      <h3 id="compatibility" className="text-xl font-semibold text-white mt-6 mb-3 scroll-mt-8">
+        Compatibility
+      </h3>
+      <p className="text-text-muted mb-4">
+        Intercepting <code>postMessage</code> is enough for dApps that use{" "}
+        <code>@stellar/freighter-api</code> directly. But popular frameworks
+        like{" "}
+        <a
+          href="https://github.com/theahaco/scaffold-stellar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-accent hover:underline"
+        >
+          Scaffold Stellar
+        </a>{" "}
+        and{" "}
+        <a
+          href="https://github.com/Creit-Tech/Stellar-Wallets-Kit"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-accent hover:underline"
+        >
+          @creit-tech/stellar-wallets-kit
+        </a>{" "}
+        also check <code>localStorage</code> on page load to restore previous
+        wallet connections. If those keys are missing, the dApp shows a
+        &ldquo;Connect Wallet&rdquo; modal — which hangs headless tests
+        because there&apos;s no user to click it.
+      </p>
+      <p className="text-text-muted mb-8">
+        To handle this, the mock pre-seeds <code>localStorage</code> with the
+        keys these libraries expect (e.g.{" "}
+        <code>@StellarWalletsKit/activeAddress</code>,{" "}
+        <code>walletId</code>, <code>walletAddress</code>), so the dApp boots
+        directly into a connected state. See{" "}
+        <a href="/how-it-works#localstorage-pre-seeding" className="text-accent hover:underline">
+          localStorage Pre-Seeding
+        </a>{" "}
+        in How It Works for the full list of keys.
+      </p>
+
+      <h2 id="current-limitations" className="text-2xl font-bold text-white mb-4 scroll-mt-8">Current Limitations</h2>
       <div className="bg-surface-light border border-border rounded-lg p-5 mb-8">
         <ul className="space-y-3 text-sm text-text-muted">
           <li>
