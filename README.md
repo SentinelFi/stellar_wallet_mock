@@ -34,6 +34,8 @@ test("dApp connects to mock wallet", async ({ page }) => {
 
 > **Note:** `installMockStellarWallet()` must be called **before** `page.goto()`.
 
+See the [docs](https://stellar-wallet-mock.vercel.app/examples) for more examples including Soroban auth entry signing, vault deposits, and read-only contract calls.
+
 ## How It Works
 
 ```
@@ -81,17 +83,19 @@ The difference is what gets mocked:
 
 This project replaces the Ethereum-specific pieces with Stellar equivalents: Freighter's postMessage protocol, `@stellar/stellar-sdk` for ed25519 signing, and localStorage seeding for `stellar-wallets-kit` and Scaffold Stellar so dApps boot into a connected state without modal dialogs.
 
+See the [full documentation](https://stellar-wallet-mock.vercel.app/how-it-works) for a deep dive into the bridge pattern, message protocol, and signing details.
+
 ## Documentation
 
-Full documentation is available in the [`docs/`](./docs) directory. Run it locally:
+Full documentation is available at **[stellar-wallet-mock.vercel.app](https://stellar-wallet-mock.vercel.app)**.
+
+You can also run it locally from the [`docs/`](./docs) directory:
 
 ```bash
 cd docs
 npm install
 npm run dev
 ```
-
-Or visit the hosted docs (coming soon).
 
 ## Limitations
 

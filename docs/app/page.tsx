@@ -14,7 +14,8 @@ export default function Home() {
         dApps without a real wallet extension. No browser extension needed. No
         manual wallet interaction. Works with any dApp that uses{" "}
         <code>@stellar/freighter-api</code> — zero dApp code changes
-        required.
+        required. An npm package is coming shortly &mdash; for now, install
+        directly from GitHub.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2 mb-12">
